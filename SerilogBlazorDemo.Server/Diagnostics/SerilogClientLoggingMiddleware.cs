@@ -52,6 +52,7 @@ namespace SerilogBlazorDemo.Server.Diagnostics
                         var startToLog = (int)Math.Min(_eventBodyLimitBytes ?? 1024, 1024);
                         var prefix = line.Substring(0, startToLog);
                         SelfLog.WriteLine("Dropping oversized event from {0} of {1} chars: {2}", context.Connection.RemoteIpAddress, line.Length, prefix);
+                        line = reader.ReadLine();
                         continue;
                     }
 
