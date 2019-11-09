@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Serilog</RootNamespace>
+    <VersionPrefix>1.0.0</VersionPrefix>
   </PropertyGroup>
     
   <ItemGroup>
