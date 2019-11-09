@@ -42,9 +42,9 @@ Then, add `UseSerilogIngestion()` to the app builder in _Startup.cs_:
 app.UseSerilogIngestion();
 ```
 
-The client app should be configured with `LoggingLevelSwitch` so that the server can control the client's logging level:
+The client app should be configured with `LoggingLevelSwitch` so that the server can control the client's logging level. An endpoint address is not required. For example:
 
-```
+```csharp
 // In a Blazor WASM Program.cs file
 
 var levelSwitch = new LoggingLevelSwitch();
