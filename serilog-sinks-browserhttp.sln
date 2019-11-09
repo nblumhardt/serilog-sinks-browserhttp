@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29326.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0514507B-4389-4A2D-9923-DE14AB0B2617}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{CBFDCE3C-F445-44E6-8B54-66EB90D9BEE9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E9B9B17F-82C0-43FE-AF38-02A980ADBD06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Sinks.BrowserHttp", "src\Serilog.Sinks.BrowserHttp\Serilog.Sinks.BrowserHttp.csproj", "{86C82022-0B2E-4125-B062-E60440B17B79}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.AspNetCore.Ingestion", "src\Serilog.AspNetCore.Ingestion\Serilog.AspNetCore.Ingestion.csproj", "{6C18787A-F734-4788-A873-4DAD9AC86DF7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerilogBlazorDemo.Shared", "samples\Shared\SerilogBlazorDemo.Shared.csproj", "{4C242BF7-9985-461D-A7F3-88E1B5CEC059}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerilogBlazorDemo.Client", "samples\Client\SerilogBlazorDemo.Client.csproj", "{B8065707-3742-4064-A765-E10F09FCED2B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerilogBlazorDemo.Server", "samples\Server\SerilogBlazorDemo.Server.csproj", "{D1A1EB94-C9B3-40E1-8E3F-C465D7FDC4FE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{86C82022-0B2E-4125-B062-E60440B17B79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86C82022-0B2E-4125-B062-E60440B17B79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86C82022-0B2E-4125-B062-E60440B17B79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86C82022-0B2E-4125-B062-E60440B17B79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C18787A-F734-4788-A873-4DAD9AC86DF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C18787A-F734-4788-A873-4DAD9AC86DF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C18787A-F734-4788-A873-4DAD9AC86DF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C18787A-F734-4788-A873-4DAD9AC86DF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C242BF7-9985-461D-A7F3-88E1B5CEC059}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C242BF7-9985-461D-A7F3-88E1B5CEC059}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C242BF7-9985-461D-A7F3-88E1B5CEC059}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C242BF7-9985-461D-A7F3-88E1B5CEC059}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8065707-3742-4064-A765-E10F09FCED2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8065707-3742-4064-A765-E10F09FCED2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8065707-3742-4064-A765-E10F09FCED2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8065707-3742-4064-A765-E10F09FCED2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1A1EB94-C9B3-40E1-8E3F-C465D7FDC4FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1A1EB94-C9B3-40E1-8E3F-C465D7FDC4FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1A1EB94-C9B3-40E1-8E3F-C465D7FDC4FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1A1EB94-C9B3-40E1-8E3F-C465D7FDC4FE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{86C82022-0B2E-4125-B062-E60440B17B79} = {0514507B-4389-4A2D-9923-DE14AB0B2617}
+		{6C18787A-F734-4788-A873-4DAD9AC86DF7} = {0514507B-4389-4A2D-9923-DE14AB0B2617}
+		{4C242BF7-9985-461D-A7F3-88E1B5CEC059} = {CBFDCE3C-F445-44E6-8B54-66EB90D9BEE9}
+		{B8065707-3742-4064-A765-E10F09FCED2B} = {CBFDCE3C-F445-44E6-8B54-66EB90D9BEE9}
+		{D1A1EB94-C9B3-40E1-8E3F-C465D7FDC4FE} = {CBFDCE3C-F445-44E6-8B54-66EB90D9BEE9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AC926D76-E3E3-4545-BEB6-07F88CF0A2AA}
+	EndGlobalSection
+EndGlobal

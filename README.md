@@ -1,11 +1,8 @@
-# serilog-blazor
+# Serilog.Sinks.BrowserHttp
 
-Experimental/proof-of-concept Serilog extensions for Blazor.
+A Serilog sink for client-side Blazor that posts batched events using the browser's HTTP stack. These can be sent to any remote HTTP endpoint, including the app's origin server. A companion package, _Serilog.AspNetCore.ClientRelay_, is also published from this repository, and can be used to relay events from the client to Serilog running in the ASP.NET Core server process.
 
-Run the `SerilogBlazorDemo.Server` project as a console app (the _SerilogBlazorDemo.Server_ configuration, not IIS):
+### Getting started
 
- * Events are written to the browser console on the client, and,
- * To the console on the server, tagged with `Origin: Client`.
 
-Clicking the counter button in the browser will trigger some more logging.
 
