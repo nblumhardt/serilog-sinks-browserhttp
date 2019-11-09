@@ -36,8 +36,8 @@ namespace SerilogBlazorDemo.Server
             app.UseStaticFiles();
             app.UseClientSideBlazorFiles<Client.Startup>();
 
-            app.UseSerilogRequestLogging();
             app.UseSerilogIngestion();
+            app.UseSerilogRequestLogging();
 
             app.UseRouting();
 

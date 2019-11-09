@@ -19,6 +19,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerilogBlazorDemo.Client", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerilogBlazorDemo.Server", "samples\Server\SerilogBlazorDemo.Server.csproj", "{D1A1EB94-C9B3-40E1-8E3F-C465D7FDC4FE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{38E5A08A-E6DA-4DDD-85B6-B99068D4F1F6}"
+ProjectSection(SolutionItems) = preProject
+	global.json = global.json
+	LICENSE = LICENSE
+	README.md = README.md
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
