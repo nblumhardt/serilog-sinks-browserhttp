@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Blazor.Hosting;
 using Serilog;
 using Serilog.Core;
-using Serilog.Debugging;
 
 namespace SerilogBlazorDemo.Client
 {
@@ -10,8 +9,6 @@ namespace SerilogBlazorDemo.Client
     {
         public static void Main(string[] args)
         {
-            SelfLog.Enable(m => Console.Error.WriteLine(m));
-
             var levelSwitch = new LoggingLevelSwitch();
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.ControlledBy(levelSwitch)
