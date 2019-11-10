@@ -15,6 +15,7 @@ namespace SerilogBlazorDemo.Client
             var levelSwitch = new LoggingLevelSwitch();
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.ControlledBy(levelSwitch)
+                .Enrich.WithProperty("InstanceId", Guid.NewGuid().ToString("n"))
                 .WriteTo.BrowserConsole()
                 .WriteTo.BrowserHttp(controlLevelSwitch: levelSwitch)
                 .CreateLogger();
@@ -29,10 +30,6 @@ namespace SerilogBlazorDemo.Client
             {
                 Log.Fatal(ex, "An exception occurred while creating the WASM host");
                 throw;
-            }
-            finally
-            {
-                Log.CloseAndFlush();
             }
         }
         

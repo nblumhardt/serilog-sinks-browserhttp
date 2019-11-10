@@ -9,10 +9,11 @@
 
 @code {
     private int currentCount = 0;
+    private static readonly ILogger Log = Serilog.Log.ForContext<Counter>();
 
     private void IncrementCount()
     {
         currentCount++;
-        Log.ForContext<Counter>().Information("Incremented count to {CurrentCount}", currentCount);
+        Log.Information("Incremented count to {CurrentCount}", currentCount);
     }
 }
