@@ -30,6 +30,10 @@ namespace SerilogBlazorDemo.Client
                 Log.Fatal(ex, "An exception occurred while creating the WASM host");
                 throw;
             }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
         
         public static IWebAssemblyHostBuilder CreateHostBuilder(string[] args) =>
