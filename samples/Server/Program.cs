@@ -1,7 +1,11 @@
 ﻿using System;
-using Microsoft.AspNetCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 
@@ -16,11 +20,11 @@ namespace SerilogBlazorDemo.Server
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .CreateLogger();
-            
+
             Log.Information("Starting up");
             try
             {
-                BuildWebHost(args).Run();
+                CreateHostBuilder(args).Build().Run();
             }
             catch (Exception ex)
             {
@@ -32,13 +36,13 @@ namespace SerilogBlazorDemo.Server
             }
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseConfiguration(new ConfigurationBuilder()
-                    .AddCommandLine(args)
-                    .Build())
-                .UseStartup<Startup>()
-                .UseSerilog()
-                .Build();
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder
+                        .UseStartup<Startup>()
+                        .UseSerilog();
+                });
     }
 }
