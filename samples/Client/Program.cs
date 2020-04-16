@@ -1,12 +1,10 @@
-using System;
-using System.Net.Http;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Text;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Core;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace SerilogBlazorDemo.Client
 {
