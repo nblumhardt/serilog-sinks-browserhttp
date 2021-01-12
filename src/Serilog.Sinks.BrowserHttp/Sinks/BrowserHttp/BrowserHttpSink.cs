@@ -59,15 +59,8 @@ namespace Serilog.Sinks.BrowserHttp
 			_eventBodyLimitBytes = eventBodyLimitBytes;
 			_controlledSwitch = new ControlledLevelSwitch(levelControlSwitch);
 			_httpClient = messageHandler == null ?
-				new HttpClient() { BaseAddress = GetBaseAddress() } :
-				new HttpClient(messageHandler) { BaseAddress = GetBaseAddress() };
-		}
-
-		static Uri GetBaseAddress()
-		{
-			var builder = WebAssemblyHostBuilder.CreateDefault();
-
-			return new Uri(builder.HostEnvironment.BaseAddress);
+				new HttpClient() { } :
+				new HttpClient(messageHandler) { };
 		}
 
 		protected override void Dispose(bool disposing)
