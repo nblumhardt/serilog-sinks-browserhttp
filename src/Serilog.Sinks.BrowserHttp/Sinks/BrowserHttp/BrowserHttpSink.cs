@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Serilog.Core;
 using Serilog.Debugging;
 using Serilog.Events;
@@ -29,7 +28,7 @@ using System.Threading.Tasks;
 
 namespace Serilog.Sinks.BrowserHttp
 {
-	class BrowserHttpSink : PeriodicBatchingSink
+    class BrowserHttpSink : PeriodicBatchingSink
 	{
 		public const int DefaultBatchPostingLimit = 1000;
 		public static readonly TimeSpan DefaultPeriod = TimeSpan.FromSeconds(2);
