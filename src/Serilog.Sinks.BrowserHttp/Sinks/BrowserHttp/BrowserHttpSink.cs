@@ -51,7 +51,8 @@ namespace Serilog.Sinks.BrowserHttp
 			long? eventBodyLimitBytes,
 			LoggingLevelSwitch levelControlSwitch,
 			int queueSizeLimit,
-			HttpMessageHandler messageHandler)
+			HttpMessageHandler messageHandler,
+			IDictionary<string, string> httpHeaders)
 			: base(batchPostingLimit, period, queueSizeLimit)
 		{
 			_endpointUrl = endpointUrl ?? throw new ArgumentNullException(nameof(endpointUrl));
@@ -60,6 +61,15 @@ namespace Serilog.Sinks.BrowserHttp
 			_httpClient = messageHandler == null ?
 				new HttpClient() { } :
 				new HttpClient(messageHandler) { };
+
+			if(httpHeaders != null)
+            {
+				var keys = httpHeaders.Keys;
+				foreach(var key in keys)
+                {
+					_httpClient.DefaultRequestHeaders.Add(key, httpHeaders[key]);
+                }
+            }
 		}
 
 		protected override void Dispose(bool disposing)
