@@ -60,7 +60,7 @@ namespace Serilog
             LoggingLevelSwitch controlLevelSwitch = null,
             int queueSizeLimit = BrowserHttpSink.DefaultQueueSizeLimit,
             HttpMessageHandler messageHandler = null,
-            IDictionary<string, string> httpHeaders = null)
+            IDictionary<string, string> defaultRequestHeaders = null)
         {
             if (loggerSinkConfiguration == null) throw new ArgumentNullException(nameof(loggerSinkConfiguration));
             if (endpointUrl == null) throw new ArgumentNullException(nameof(endpointUrl));
@@ -77,7 +77,7 @@ namespace Serilog
                 controlLevelSwitch,
                 queueSizeLimit,
                 messageHandler,
-                httpHeaders);
+                defaultRequestHeaders);
 
             return loggerSinkConfiguration.Sink(sink, restrictedToMinimumLevel);
         }
