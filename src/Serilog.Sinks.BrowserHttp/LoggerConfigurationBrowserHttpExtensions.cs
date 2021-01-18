@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using Serilog.Configuration;
 using Serilog.Core;
@@ -58,7 +59,8 @@ namespace Serilog
             long? eventBodyLimitBytes = 256 * 1024,
             LoggingLevelSwitch controlLevelSwitch = null,
             int queueSizeLimit = BrowserHttpSink.DefaultQueueSizeLimit,
-            HttpMessageHandler messageHandler = null)
+            HttpMessageHandler messageHandler = null,
+            IDictionary<string, string> defaultRequestHeaders = null)
         {
             if (loggerSinkConfiguration == null) throw new ArgumentNullException(nameof(loggerSinkConfiguration));
             if (endpointUrl == null) throw new ArgumentNullException(nameof(endpointUrl));
@@ -74,7 +76,8 @@ namespace Serilog
                 eventBodyLimitBytes,
                 controlLevelSwitch,
                 queueSizeLimit,
-                messageHandler);
+                messageHandler,
+                defaultRequestHeaders);
 
             return loggerSinkConfiguration.Sink(sink, restrictedToMinimumLevel);
         }
