@@ -15,10 +15,11 @@ dotnet add package Serilog.Sinks.BrowserHttp
 The sink is enabled using `WriteTo.BrowserHttp`:
 
 ```csharp
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.ControlledBy(levelSwitch)
     .WriteTo.BrowserConsole()
-    .WriteTo.BrowserHttp("https://logs.example.com")
+    .WriteTo.BrowserHttp($"{builder.HostEnvironment.BaseAddress}ingest")
     .CreateLogger();
 
 Log.Information("Hello, browser!");
@@ -46,11 +47,11 @@ The client app should be configured with `LoggingLevelSwitch` so that the server
 
 ```csharp
 // In a Blazor WASM Program.cs file
-
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
 var levelSwitch = new LoggingLevelSwitch();
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.ControlledBy(levelSwitch)
-    .WriteTo.BrowserHttp(controlLevelSwitch: levelSwitch)
+    .WriteTo.BrowserHttp($"{builder.HostEnvironment.BaseAddress}ingest", controlLevelSwitch: levelSwitch)
     .CreateLogger();
 
 Log.Information("Hello, browser!");
