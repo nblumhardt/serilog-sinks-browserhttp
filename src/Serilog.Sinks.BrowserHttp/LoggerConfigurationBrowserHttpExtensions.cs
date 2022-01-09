@@ -62,10 +62,7 @@ namespace Serilog
             HttpMessageHandler messageHandler = null,
             IDictionary<string, string> defaultRequestHeaders = null)
         {
-            if (loggerSinkConfiguration == null) throw new ArgumentNullException(nameof(loggerSinkConfiguration));
-            if (endpointUrl == null) throw new ArgumentNullException(nameof(endpointUrl));
-            if (queueSizeLimit < 0)
-                throw new ArgumentOutOfRangeException(nameof(queueSizeLimit), "Queue size limit must be non-zero.");
+            VerifyParameters(loggerSinkConfiguration, endpointUrl, queueSizeLimit);
 
             var defaultedPeriod = period ?? BrowserHttpSink.DefaultPeriod;
 
