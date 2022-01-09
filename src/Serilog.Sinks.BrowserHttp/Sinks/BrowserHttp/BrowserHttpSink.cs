@@ -40,6 +40,7 @@ namespace Serilog.Sinks.BrowserHttp
 		readonly string _endpointUrl;
 		readonly long? _eventBodyLimitBytes;
 		readonly HttpClient _httpClient;
+		readonly bool _disposeHttpClient;
 
 		DateTime _nextRequiredLevelCheckUtc = DateTime.UtcNow.Add(RequiredLevelCheckInterval);
 		readonly ControlledLevelSwitch _controlledSwitch;
@@ -53,14 +54,40 @@ namespace Serilog.Sinks.BrowserHttp
 			int queueSizeLimit,
 			HttpMessageHandler messageHandler,
 			IDictionary<string, string> defaultRequestHeaders)
-			: base(batchPostingLimit, period, queueSizeLimit)
+		: this(endpointUrl, batchPostingLimit, period, eventBodyLimitBytes, levelControlSwitch, queueSizeLimit, defaultRequestHeaders)
+		{
+			_httpClient = messageHandler == null ? new HttpClient() : new HttpClient(messageHandler);
+			_disposeHttpClient = true;
+		}
+
+		public BrowserHttpSink(
+			string endpointUrl,
+			int batchPostingLimit,
+			TimeSpan period,
+			long? eventBodyLimitBytes,
+			LoggingLevelSwitch levelControlSwitch,
+			int queueSizeLimit,
+			HttpClient httpClient,
+			IDictionary<string, string> defaultRequestHeaders)
+		: this(endpointUrl, batchPostingLimit, period, eventBodyLimitBytes, levelControlSwitch, queueSizeLimit, defaultRequestHeaders)
+		{
+			_httpClient = httpClient;
+			_disposeHttpClient = false;
+		}
+
+		private BrowserHttpSink(
+			string endpointUrl,
+			int batchPostingLimit,
+			TimeSpan period,
+			long? eventBodyLimitBytes,
+			LoggingLevelSwitch levelControlSwitch,
+			int queueSizeLimit,
+			IDictionary<string, string> defaultRequestHeaders)
+		: base(batchPostingLimit, period, queueSizeLimit)
 		{
 			_endpointUrl = endpointUrl ?? throw new ArgumentNullException(nameof(endpointUrl));
 			_eventBodyLimitBytes = eventBodyLimitBytes;
 			_controlledSwitch = new ControlledLevelSwitch(levelControlSwitch);
-			_httpClient = messageHandler == null ?
-				new HttpClient() { } :
-				new HttpClient(messageHandler) { };
 
 			if (defaultRequestHeaders != null)
 			{
@@ -75,7 +102,7 @@ namespace Serilog.Sinks.BrowserHttp
 		{
 			base.Dispose(disposing);
 
-			if (disposing)
+			if (disposing && _disposeHttpClient)
 				_httpClient.Dispose();
 		}
 
