@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using Serilog.Configuration;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Sinks.BrowserHttp;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
 
 namespace Serilog
 {
@@ -102,10 +102,10 @@ namespace Serilog
         /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
         public static LoggerConfiguration BrowserHttp(
             this LoggerSinkConfiguration loggerSinkConfiguration,
+            HttpClient httpClient,
             string endpointUrl = DefaultOriginEndpointUrl,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             int batchPostingLimit = BrowserHttpSink.DefaultBatchPostingLimit,
-            HttpClient httpClient,
             TimeSpan? period = null,
             long? eventBodyLimitBytes = 256 * 1024,
             LoggingLevelSwitch controlLevelSwitch = null,
@@ -117,13 +117,13 @@ namespace Serilog
             var defaultedPeriod = period ?? BrowserHttpSink.DefaultPeriod;
 
             var sink = new BrowserHttpSink(
+                httpClient,
                 endpointUrl,
                 batchPostingLimit,
                 defaultedPeriod,
                 eventBodyLimitBytes,
                 controlLevelSwitch,
                 queueSizeLimit,
-                httpClient,
                 defaultRequestHeaders);
 
             return loggerSinkConfiguration.Sink(sink, restrictedToMinimumLevel);
