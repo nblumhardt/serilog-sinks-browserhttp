@@ -65,15 +65,17 @@ namespace Serilog
             VerifyParameters(loggerSinkConfiguration, endpointUrl, queueSizeLimit);
 
             var defaultedPeriod = period ?? BrowserHttpSink.DefaultPeriod;
+            var httpClient = messageHandler == null ? new HttpClient() : new HttpClient(messageHandler);
 
             var sink = new BrowserHttpSink(
+                httpClient,
                 endpointUrl,
                 batchPostingLimit,
                 defaultedPeriod,
                 eventBodyLimitBytes,
                 controlLevelSwitch,
                 queueSizeLimit,
-                messageHandler,
+                true,
                 defaultRequestHeaders);
 
             return loggerSinkConfiguration.Sink(sink, restrictedToMinimumLevel);
@@ -109,8 +111,7 @@ namespace Serilog
             TimeSpan? period = null,
             long? eventBodyLimitBytes = 256 * 1024,
             LoggingLevelSwitch controlLevelSwitch = null,
-            int queueSizeLimit = BrowserHttpSink.DefaultQueueSizeLimit,
-            IDictionary<string, string> defaultRequestHeaders = null)
+            int queueSizeLimit = BrowserHttpSink.DefaultQueueSizeLimit)
         {
             VerifyParameters(loggerSinkConfiguration, endpointUrl, queueSizeLimit);
 
@@ -124,7 +125,7 @@ namespace Serilog
                 eventBodyLimitBytes,
                 controlLevelSwitch,
                 queueSizeLimit,
-                defaultRequestHeaders);
+                false);
 
             return loggerSinkConfiguration.Sink(sink, restrictedToMinimumLevel);
         }
