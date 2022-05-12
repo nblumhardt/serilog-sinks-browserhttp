@@ -45,28 +45,6 @@ namespace Serilog.Sinks.BrowserHttp
         DateTime _nextRequiredLevelCheckUtc = DateTime.UtcNow.Add(RequiredLevelCheckInterval);
         readonly ControlledLevelSwitch _controlledSwitch;
 
-        //public BrowserHttpSink(
-        //    string endpointUrl,
-        //    int batchPostingLimit,
-        //    TimeSpan period,
-        //    long? eventBodyLimitBytes,
-        //    LoggingLevelSwitch levelControlSwitch,
-        //    int queueSizeLimit,
-        //    HttpMessageHandler messageHandler,
-        //    IDictionary<string, string> defaultRequestHeaders)
-        //: this(messageHandler == null ? new HttpClient() : new HttpClient(messageHandler), endpointUrl, batchPostingLimit, period, eventBodyLimitBytes, levelControlSwitch, queueSizeLimit, defaultRequestHeaders, true) { }
-
-        //public BrowserHttpSink(
-        //    HttpClient httpClient,
-        //    string endpointUrl,
-        //    int batchPostingLimit,
-        //    TimeSpan period,
-        //    long? eventBodyLimitBytes,
-        //    LoggingLevelSwitch levelControlSwitch,
-        //    int queueSizeLimit,
-        //    IDictionary<string, string> defaultRequestHeaders)
-        //: this(httpClient, endpointUrl, batchPostingLimit, period, eventBodyLimitBytes, levelControlSwitch, queueSizeLimit, defaultRequestHeaders, false) { }
-
         public BrowserHttpSink(
             HttpClient httpClient,
             string endpointUrl,
