@@ -10,7 +10,7 @@ deploy:
 - provider: NuGet
   skip_symbols: true
   api_key:
-    secure: KXvzDZzQTp7u3Ew+BrGEvFSmWKkzJ26jBhx1KmGoT41OHSYhTHR6NhjXneAm1eJ7
+    secure: GHDQ/obUdI88T5nch7dTrsESsQ/sGXPZUXt2F2rwAwo2e7YT6Svm5XBaFEmmMJAj
   on:
-    branch: /^(master|dev)$/
+    branch: /^(main|dev)$/
 
