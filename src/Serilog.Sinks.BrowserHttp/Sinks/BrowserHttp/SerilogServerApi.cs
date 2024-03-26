@@ -15,35 +15,34 @@
 using System;
 using Serilog.Events;
 
-namespace Serilog.Sinks.BrowserHttp
+namespace Serilog.Sinks.BrowserHttp;
+
+static class SerilogServerApi
 {
-    class SerilogServerApi
+    const string LevelMarker = "\"MinimumLevelAccepted\":\"";
+
+    public const string CompactLogEventFormatMimeType = "application/vnd.serilog.clef";
+
+    public static LogEventLevel? ReadEventInputResult(string? eventInputResult)
     {
-        const string LevelMarker = "\"MinimumLevelAccepted\":\"";
+        if (eventInputResult == null) return null;
 
-        public const string CompactLogEventFormatMimeType = "application/vnd.serilog.clef";
+        var startProp = eventInputResult.IndexOf(LevelMarker, StringComparison.Ordinal);
+        if (startProp == -1)
+            return null;
 
-        public static LogEventLevel? ReadEventInputResult(string eventInputResult)
-        {
-            if (eventInputResult == null) return null;
+        var startValue = startProp + LevelMarker.Length;
+        if (startValue >= eventInputResult.Length)
+            return null;
 
-            var startProp = eventInputResult.IndexOf(LevelMarker, StringComparison.Ordinal);
-            if (startProp == -1)
-                return null;
+        var endValue = eventInputResult.IndexOf('"', startValue);
+        if (endValue == -1)
+            return null;
 
-            var startValue = startProp + LevelMarker.Length;
-            if (startValue >= eventInputResult.Length)
-                return null;
+        var value = eventInputResult.Substring(startValue, endValue - startValue);
+        if (!Enum.TryParse(value, out LogEventLevel minimumLevel))
+            return null;
 
-            var endValue = eventInputResult.IndexOf('"', startValue);
-            if (endValue == -1)
-                return null;
-
-            var value = eventInputResult.Substring(startValue, endValue - startValue);
-            if (!Enum.TryParse(value, out LogEventLevel minimumLevel))
-                return null;
-
-            return minimumLevel;
-        }
+        return minimumLevel;
     }
 }
