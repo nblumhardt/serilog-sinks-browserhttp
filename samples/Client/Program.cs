@@ -6,36 +6,35 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace SerilogBlazorDemo.Client
+namespace SerilogBlazorDemo.Client;
+
+public class Program
 {
-	public class Program
+	public static async Task Main(string[] args)
 	{
-		public static async Task Main(string[] args)
+		var levelSwitch = new LoggingLevelSwitch();
+		Log.Logger = new LoggerConfiguration()
+			.MinimumLevel.ControlledBy(levelSwitch)
+			.Enrich.WithProperty("InstanceId", Guid.NewGuid().ToString("n"))
+			.WriteTo.BrowserConsole()
+			.WriteTo.BrowserHttp(controlLevelSwitch: levelSwitch)
+			.CreateLogger();
+
+		Log.Information("Hello, browser!");
+
+		try
 		{
-			var levelSwitch = new LoggingLevelSwitch();
-			Log.Logger = new LoggerConfiguration()
-				.MinimumLevel.ControlledBy(levelSwitch)
-				.Enrich.WithProperty("InstanceId", Guid.NewGuid().ToString("n"))
-				.WriteTo.BrowserConsole()
-				.WriteTo.BrowserHttp(controlLevelSwitch: levelSwitch)
-				.CreateLogger();
+			var builder = WebAssemblyHostBuilder.CreateDefault(args);
+			builder.RootComponents.Add<App>("app");
 
-			Log.Information("Hello, browser!");
+			builder.Services.AddSingleton(new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-			try
-			{
-				var builder = WebAssemblyHostBuilder.CreateDefault(args);
-				builder.RootComponents.Add<App>("app");
-
-				builder.Services.AddSingleton(new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
-				await builder.Build().RunAsync();
-			}
-			catch (Exception ex)
-			{
-				Log.Fatal(ex, "An exception occurred while creating the WASM host");
-				throw;
-			}
+			await builder.Build().RunAsync();
+		}
+		catch (Exception ex)
+		{
+			Log.Fatal(ex, "An exception occurred while creating the WASM host");
+			throw;
 		}
 	}
 }
