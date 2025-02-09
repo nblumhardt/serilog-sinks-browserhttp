@@ -19,128 +19,137 @@ using Serilog.Sinks.BrowserHttp;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using Serilog.Sinks.PeriodicBatching;
 
-namespace Serilog
+namespace Serilog;
+
+/// <summary>
+/// Extends Serilog configuration to write events via HTTP.
+/// </summary>
+public static class LoggerConfigurationBrowserHttpExtensions
 {
+    const string DefaultOriginEndpointUrl = "ingest";
+
     /// <summary>
-    /// Extends Serilog configuration to write events via HTTP.
+    /// Adds a sink that writes log events to an HTTP server.
     /// </summary>
-    public static class LoggerConfigurationBrowserHttpExtensions
+    /// <param name="loggerSinkConfiguration">The logger configuration.</param>
+    /// <param name="endpointUrl">The URL of the server logging endpoint.</param>
+    /// <param name="restrictedToMinimumLevel">The minimum log event level required 
+    /// in order to write an event to the sink.</param>
+    /// <param name="batchPostingLimit">The maximum number of events to post in a single batch.</param>
+    /// <param name="period">The time to wait between checking for event batches.</param>
+    /// <param name="eventBodyLimitBytes">The maximum size, in bytes, that the JSON representation of
+    /// an event may take before it is dropped rather than being sent to the server. Specify null for no limit.
+    /// The default is 265 KB.</param>
+    /// <param name="controlLevelSwitch">If provided, the switch will be updated based on the server's level setting
+    /// for the corresponding API key. Passing the same key to MinimumLevel.ControlledBy() will make the whole pipeline
+    /// dynamically controlled. Do not specify <paramref name="restrictedToMinimumLevel"/> with this setting.</param>
+    /// <param name="messageHandler">Used to construct the HttpClient that will send the log messages to the ingestion endpoint.</param>
+    /// <param name="queueSizeLimit">The maximum number of events that will be held in-memory while waiting to ship them to
+    /// the server. Beyond this limit, events will be dropped. The default is 100,000. Has no effect on
+    /// durable log shipping.</param>
+    /// <param name="defaultRequestHeaders">Headers to include with outbound HTTP requests.</param>
+    /// <returns>Logger configuration, allowing configuration to continue.</returns>
+    /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
+    public static LoggerConfiguration BrowserHttp(
+        this LoggerSinkConfiguration loggerSinkConfiguration,
+        string endpointUrl = DefaultOriginEndpointUrl,
+        LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
+        int batchPostingLimit = BrowserHttpSink.DefaultBatchPostingLimit,
+        TimeSpan? period = null,
+        long? eventBodyLimitBytes = 256 * 1024,
+        LoggingLevelSwitch? controlLevelSwitch = null,
+        int queueSizeLimit = BrowserHttpSink.DefaultQueueSizeLimit,
+        HttpMessageHandler? messageHandler = null,
+        IDictionary<string, string>? defaultRequestHeaders = null)
     {
-        const string DefaultOriginEndpointUrl = "ingest";
+        VerifyParameters(loggerSinkConfiguration, endpointUrl, queueSizeLimit);
 
-        /// <summary>
-        /// Adds a sink that writes log events to an HTTP server.
-        /// </summary>
-        /// <param name="loggerSinkConfiguration">The logger configuration.</param>
-        /// <param name="endpointUrl">The URL of the server logging endpoint.</param>
-        /// <param name="restrictedToMinimumLevel">The minimum log event level required 
-        /// in order to write an event to the sink.</param>
-        /// <param name="batchPostingLimit">The maximum number of events to post in a single batch.</param>
-        /// <param name="period">The time to wait between checking for event batches.</param>
-        /// <param name="eventBodyLimitBytes">The maximum size, in bytes, that the JSON representation of
-        /// an event may take before it is dropped rather than being sent to the server. Specify null for no limit.
-        /// The default is 265 KB.</param>
-        /// <param name="controlLevelSwitch">If provided, the switch will be updated based on the server's level setting
-        /// for the corresponding API key. Passing the same key to MinimumLevel.ControlledBy() will make the whole pipeline
-        /// dynamically controlled. Do not specify <paramref name="restrictedToMinimumLevel"/> with this setting.</param>
-        /// <param name="messageHandler">Used to construct the HttpClient that will send the log messages to the ingestion endpoint.</param>
-        /// <param name="queueSizeLimit">The maximum number of events that will be held in-memory while waiting to ship them to
-        /// the server. Beyond this limit, events will be dropped. The default is 100,000. Has no effect on
-        /// durable log shipping.</param>
-        /// <returns>Logger configuration, allowing configuration to continue.</returns>
-        /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
-        public static LoggerConfiguration BrowserHttp(
-            this LoggerSinkConfiguration loggerSinkConfiguration,
-            string endpointUrl = DefaultOriginEndpointUrl,
-            LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
-            int batchPostingLimit = BrowserHttpSink.DefaultBatchPostingLimit,
-            TimeSpan? period = null,
-            long? eventBodyLimitBytes = 256 * 1024,
-            LoggingLevelSwitch controlLevelSwitch = null,
-            int queueSizeLimit = BrowserHttpSink.DefaultQueueSizeLimit,
-            HttpMessageHandler messageHandler = null,
-            IDictionary<string, string> defaultRequestHeaders = null)
+        var defaultedPeriod = period ?? BrowserHttpSink.DefaultPeriod;
+        var httpClient = messageHandler == null ? new HttpClient() : new HttpClient(messageHandler);
+
+        var sink = new BrowserHttpSink(
+            httpClient,
+            endpointUrl,
+            eventBodyLimitBytes,
+            controlLevelSwitch,
+            true,
+            defaultRequestHeaders);
+
+        var batching = new PeriodicBatchingSink(sink, new PeriodicBatchingSinkOptions
         {
-            VerifyParameters(loggerSinkConfiguration, endpointUrl, queueSizeLimit);
+            BatchSizeLimit = batchPostingLimit,
+            Period = defaultedPeriod,
+            QueueLimit = queueSizeLimit
+        });
 
-            var defaultedPeriod = period ?? BrowserHttpSink.DefaultPeriod;
-            var httpClient = messageHandler == null ? new HttpClient() : new HttpClient(messageHandler);
+        return loggerSinkConfiguration.Sink(batching, restrictedToMinimumLevel, controlLevelSwitch);
+    }
 
-            var sink = new BrowserHttpSink(
-                httpClient,
-                endpointUrl,
-                batchPostingLimit,
-                defaultedPeriod,
-                eventBodyLimitBytes,
-                controlLevelSwitch,
-                queueSizeLimit,
-                true,
-                defaultRequestHeaders);
+    /// <summary>
+    /// Adds a sink that writes log events to an HTTP server.
+    /// </summary>
+    /// <param name="loggerSinkConfiguration">The logger configuration.</param>
+    /// <param name="endpointUrl">The URL of the server logging endpoint.</param>
+    /// <param name="restrictedToMinimumLevel">The minimum log event level required 
+    /// in order to write an event to the sink.</param>
+    /// <param name="batchPostingLimit">The maximum number of events to post in a single batch.</param>
+    /// <param name="period">The time to wait between checking for event batches.</param>
+    /// <param name="eventBodyLimitBytes">The maximum size, in bytes, that the JSON representation of
+    /// an event may take before it is dropped rather than being sent to the server. Specify null for no limit.
+    /// The default is 265 KB.</param>
+    /// <param name="controlLevelSwitch">If provided, the switch will be updated based on the server's level setting
+    /// for the corresponding API key. Passing the same key to MinimumLevel.ControlledBy() will make the whole pipeline
+    /// dynamically controlled. Do not specify <paramref name="restrictedToMinimumLevel"/> with this setting.</param>
+    /// <param name="httpClient">The HttpClient that will send the log messages to the ingestion endpoint.</param>
+    /// <param name="queueSizeLimit">The maximum number of events that will be held in-memory while waiting to ship them to
+    /// the server. Beyond this limit, events will be dropped. The default is 100,000. Has no effect on
+    /// durable log shipping.</param>
+    /// <returns>Logger configuration, allowing configuration to continue.</returns>
+    /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
+    public static LoggerConfiguration BrowserHttp(
+        this LoggerSinkConfiguration loggerSinkConfiguration,
+        HttpClient httpClient,
+        string endpointUrl = DefaultOriginEndpointUrl,
+        LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
+        int batchPostingLimit = BrowserHttpSink.DefaultBatchPostingLimit,
+        TimeSpan? period = null,
+        long? eventBodyLimitBytes = 256 * 1024,
+        LoggingLevelSwitch? controlLevelSwitch = null,
+        int queueSizeLimit = BrowserHttpSink.DefaultQueueSizeLimit)
+    {
+        VerifyParameters(loggerSinkConfiguration, endpointUrl, queueSizeLimit);
 
-            return loggerSinkConfiguration.Sink(sink, restrictedToMinimumLevel);
-        }
+        var defaultedPeriod = period ?? BrowserHttpSink.DefaultPeriod;
 
-        /// <summary>
-        /// Adds a sink that writes log events to an HTTP server.
-        /// </summary>
-        /// <param name="loggerSinkConfiguration">The logger configuration.</param>
-        /// <param name="endpointUrl">The URL of the server logging endpoint.</param>
-        /// <param name="restrictedToMinimumLevel">The minimum log event level required 
-        /// in order to write an event to the sink.</param>
-        /// <param name="batchPostingLimit">The maximum number of events to post in a single batch.</param>
-        /// <param name="period">The time to wait between checking for event batches.</param>
-        /// <param name="eventBodyLimitBytes">The maximum size, in bytes, that the JSON representation of
-        /// an event may take before it is dropped rather than being sent to the server. Specify null for no limit.
-        /// The default is 265 KB.</param>
-        /// <param name="controlLevelSwitch">If provided, the switch will be updated based on the server's level setting
-        /// for the corresponding API key. Passing the same key to MinimumLevel.ControlledBy() will make the whole pipeline
-        /// dynamically controlled. Do not specify <paramref name="restrictedToMinimumLevel"/> with this setting.</param>
-        /// <param name="httpClient">The HttpClient that will send the log messages to the ingestion endpoint.</param>
-        /// <param name="queueSizeLimit">The maximum number of events that will be held in-memory while waiting to ship them to
-        /// the server. Beyond this limit, events will be dropped. The default is 100,000. Has no effect on
-        /// durable log shipping.</param>
-        /// <returns>Logger configuration, allowing configuration to continue.</returns>
-        /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
-        public static LoggerConfiguration BrowserHttp(
-            this LoggerSinkConfiguration loggerSinkConfiguration,
-            HttpClient httpClient,
-            string endpointUrl = DefaultOriginEndpointUrl,
-            LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
-            int batchPostingLimit = BrowserHttpSink.DefaultBatchPostingLimit,
-            TimeSpan? period = null,
-            long? eventBodyLimitBytes = 256 * 1024,
-            LoggingLevelSwitch controlLevelSwitch = null,
-            int queueSizeLimit = BrowserHttpSink.DefaultQueueSizeLimit)
+        var sink = new BrowserHttpSink(
+            httpClient,
+            endpointUrl,
+            eventBodyLimitBytes,
+            controlLevelSwitch,
+            false);
+            
+        var batching = new PeriodicBatchingSink(sink, new PeriodicBatchingSinkOptions
         {
-            VerifyParameters(loggerSinkConfiguration, endpointUrl, queueSizeLimit);
+            BatchSizeLimit = batchPostingLimit,
+            Period = defaultedPeriod,
+            QueueLimit = queueSizeLimit
+        });
 
-            var defaultedPeriod = period ?? BrowserHttpSink.DefaultPeriod;
+        return loggerSinkConfiguration.Sink(batching, restrictedToMinimumLevel, controlLevelSwitch);
+    }
 
-            var sink = new BrowserHttpSink(
-                httpClient,
-                endpointUrl,
-                batchPostingLimit,
-                defaultedPeriod,
-                eventBodyLimitBytes,
-                controlLevelSwitch,
-                queueSizeLimit,
-                false);
-
-            return loggerSinkConfiguration.Sink(sink, restrictedToMinimumLevel);
-        }
-
-        private static void VerifyParameters(
-            LoggerSinkConfiguration loggerSinkConfiguration,
-            string endpointUrl,
-            int queueSizeLimit)
-        {
-            if (loggerSinkConfiguration == null)
-                throw new ArgumentNullException(nameof(loggerSinkConfiguration));
-            if (endpointUrl == null)
-                throw new ArgumentNullException(nameof(endpointUrl));
-            if (queueSizeLimit < 0)
-                throw new ArgumentOutOfRangeException(nameof(queueSizeLimit), "Queue size limit must be non-zero.");
-        }
+    static void VerifyParameters(
+        LoggerSinkConfiguration loggerSinkConfiguration,
+        string endpointUrl,
+        int queueSizeLimit)
+    {
+        if (loggerSinkConfiguration == null)
+            throw new ArgumentNullException(nameof(loggerSinkConfiguration));
+        if (endpointUrl == null)
+            throw new ArgumentNullException(nameof(endpointUrl));
+        if (queueSizeLimit < 0)
+            throw new ArgumentOutOfRangeException(nameof(queueSizeLimit), "Queue size limit must be non-zero.");
     }
 }
